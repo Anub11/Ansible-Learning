@@ -1,0 +1,5 @@
+---
+# vars file for post-install
+server0: 0.ubuntu.pool.ntp.org
+server1: 1.ubuntu.pool.ntp.org
+NTPPATH: /etc/ntp.conf

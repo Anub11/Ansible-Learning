@@ -1,0 +1,88 @@
+---
+- name: Learning Condition on Ansible
+  hosts: all
+  become: yes
+
+    #  vars_prompt:
+    #- name: "WEBURL"
+    #  prompt: "Enter the url from tooplate.com: "
+    #- name: "DIRNAME"
+    #  prompt: "Enter dir name: "
+
+  vars:
+    WEBURL: https://www.tooplate.com/download/2126_antique_cafe
+    DIRNAME: 2126_antique_cafe
+
+  tasks:
+    - debug:
+        msg: "URL = {{WEBURL}}  DIRNAME = {{DIRNAME}}"
+
+
+    - name: install ntp on ubuntu
+      apt:
+        name: "{{ item }}"
+        state: present
+      when: ansible_os_family == "Debian"
+      loop:
+        - ntp
+        - wget
+        - git
+        - unzip
+        - tree
+        - apache2
+    
+    - name: install ntp on Redhat
+      yum:
+        name: ntp
+        state: present
+      when: ansible_os_family == "RedHat"
+      loop:
+        - ntp
+        - wget
+        - git
+        - unzip
+        - tree
+
+
+    - name: start and enable apache service on ubuntu
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
+    - name: start and enable ntp service on redhat
+      service:
+        name: ntpd
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: download website from tooplate.com
+      get_url:
+        url: "{{ WEBURL }}"
+        dest: /temp/website.zip
+
+    - name: unzip the website file
+      unarchive:
+        src: /temp/website.zip
+        dest: /temp/
+        remote_src: yes
+      register: unzip_task
+
+
+    - name: copy file from template to /var/www/html
+      shell: "cp -r /temp/2126_antique_cafe/* /var/www/html" 
+      when: unzip_task.changed
+      notify:
+        - start and enable apache service on ubuntu
+
+  handlers:     
+    - name: start and enable apache service on ubuntu
+      service:
+        name: apache2
+        state: restarted
+        enabled: yes
+
+
+

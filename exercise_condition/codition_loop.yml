@@ -1,0 +1,48 @@
+---
+- name: Learning Condition on Ansible
+  hosts: all
+  become: yes
+  tasks:
+    - name: install ntp on ubuntu
+      apt:
+        name: "{{ item }}"
+        state: present
+      when: ansible_os_family == "Debian"
+      loop:
+        - ntp
+        - wget
+        - git
+        - unzip
+        - tree
+    
+    - name: install ntp on Redhat
+      yum:
+        name: ntp
+        state: present
+      when: ansible_os_family == "RedHat"
+      loop:
+        - ntp
+        - wget
+        - git
+        - unzip
+        - tree
+
+
+    - name: start and enable ntp service on ubuntu
+      service:
+        name: ntp
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
+    - name: start and enable ntp service on redhat
+      service:
+        name: ntpd
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"
+
+      
+
+
+

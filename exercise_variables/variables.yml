@@ -1,0 +1,27 @@
+---
+- hosts: webserver
+  become: yes
+
+  vars:
+    webpackage: index.html
+    webdestdir: /var/www/html
+      
+  tasks:
+    - name: installed apache2
+      apt:
+        name: apache2  
+        state: present
+
+    - name: start and enable apache2
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+    - name: push web files
+      copy: 
+        src: "{{webpackage}}"
+        dest: "{{webdestdir}}"
+        owner: root
+        group: root
+        mode: 0644
+

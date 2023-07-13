@@ -1,0 +1,94 @@
+---
+# tasks file for post-install
+- name: install software on ubuntu
+  apt:
+    name: "{{ item }}"
+    state: present
+      # upadte_cache: yes  #apt-get upate
+  when: ansible_os_family == "Debian"
+  loop:
+    - ntp
+    - wget
+    - git
+    - unzip
+    - zip
+    - tree
+
+- name: install software on Redhat
+  yum:
+    name: ntp
+    state: present
+  when: ansible_os_family == "RedHat"
+  loop:
+    - ntp
+    - wget
+    - git
+    - unzip
+    - tree
+    - zip
+
+- name: start and enable ntp service on ubuntu
+  service:
+    name: ntp
+    state: started
+    enabled: yes
+  when: ansible_os_family == "Debian"
+
+- name: start and enable ntp service on redhat
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+  when: ansible_os_family == "RedHat"
+
+
+- name: Deploy ntp config fie in redhat
+  template:
+    src: ntp_config_ubuntu.j2
+    dest: "{{ NTPPATH }}"
+  notify:
+    - Restart NTP service RedHat
+  when: ansible_os_family == "RedHat"
+
+- name: Deploy ntp config fie in ubuntu
+  template:
+    src: ntp_config_ubuntu.j2
+    dest: "{{ NTPPATH }}"
+  notify:
+    - Restart NTP service Ubuntu
+  when: ansible_os_family == "Debian"
+
+- name: deploy banner file
+  copy:
+    content: "Welcome to {{ ansible_fqdn}} \n OS {{ ansible_os_family }} \n Free RAM size {{ ansible_memory_mb.real.free }}"
+    dest: /etc/motd
+- name: create directory
+  file:
+    path: /opt/datadir
+    state: directory
+    mode: 0775
+    owner: ubuntu
+    group: ubuntu
+- name: push data file
+  copy:
+    src: datafiles.tar.gz
+    dest: /opt/datadir/
+    mode: 0775
+    owner: ubuntu
+    group: ubuntu
+- name: unarchive data file on remote machine
+  unarchive:
+    src: /opt/datadir/datafiles.tar.gz
+    dest: /opt/datadir/
+    remote_src: yes
+    mode: 0775
+    owner: ubuntu
+    group: ubuntu
+  register: unarchive_status
+
+- name: remove tar.gz file
+  file:
+    path: /opt/datadir/datafiles.tar.gz
+    state: absent
+  when: unarchive_status.changed
+

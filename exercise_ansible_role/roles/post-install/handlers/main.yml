@@ -1,0 +1,12 @@
+---
+# handlers file for post-install
+- name: Restart NTP service RedHat
+  service:
+    name: ntpd
+    state: restarted
+    enabled: yes
+- name: Restart NTP service Ubuntu
+  service:
+    name: ntp
+    state: restarted
+    enabled: yes

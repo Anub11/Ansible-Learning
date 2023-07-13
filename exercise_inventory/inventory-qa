@@ -1,0 +1,23 @@
+web01 ansible_host=172.31.32.85
+
+
+[webserver]
+web01
+
+
+[dbserver] 
+web01
+
+
+[mydc:childern]
+#webserver
+#dbserver
+
+
+[webserver:vars]
+#ansible_user=devops
+#ansible_ssh_pass=admin123
+
+
+[mydc:vars]
+

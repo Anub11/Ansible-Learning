@@ -1,0 +1,31 @@
+---
+- name: setup webiste on web group
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: installed apache2
+      apt:
+        name: apache2  
+        state: present
+
+    - name: start and enable apache2
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+- name: setup mysql on db server
+  hosts: dbserver
+  become: yes
+  tasks:
+    - name: install mysql
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: start and enable mysql-server
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+

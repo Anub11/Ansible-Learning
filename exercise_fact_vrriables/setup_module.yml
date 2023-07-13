@@ -1,0 +1,14 @@
+---
+- name: setup webiste on web group
+  hosts: all
+  tasks:
+    - debug:
+        msg: "OS FAMAILY : {{ansible_os_family}}"
+    - debug:
+        msg: "OS FQDN : {{ansible_fqdn}}"
+    - debug:
+        msg: "OS FREE RAM : {{ansible_memory_mb.real.free}}"
+
+
+
+

@@ -1,0 +1,6 @@
+1. Installed mysql sevice on remote host 
+ansible -i inventory-qa -m apt -a "name=mysql-server state=present" web01 --become
+
+2. start mysql servie
+ansible -i inventory-qa -m service -a "name=mysql state=started enabled=yes" web01 --become
+ 
